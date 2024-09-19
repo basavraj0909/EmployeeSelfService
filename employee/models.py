@@ -32,6 +32,11 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     date_of_birth = models.DateField(null=True)
     position = models.CharField(max_length=20, default='NA')
 
+    # Additional Profile Information
+    profile_picture = models.ImageField(upload_to='profile_pictures/', null=True, blank=True)
+    address = models.TextField(null=True, blank=True)
+    bio = models.TextField(null=True, blank=True)
+
     is_active = models.BooleanField(default=True)
     is_staff = models.BooleanField(default=False)
 
