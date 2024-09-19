@@ -9,25 +9,21 @@ from rest_framework.response import Response
 from rest_framework import status
 from rest_framework.exceptions import NotFound
 
-
 logger = logging.getLogger('employee')
 
 
 class RegisterView(generics.CreateAPIView):
-
     serializer_class = EmployeeSerializer
     permission_classes = [AllowAny]
 
-
     def create(self, request, *args, **kwargs):
-
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
         self.perform_create(serializer)
-        headers =self.get_success_headers(serializer.data)
+        headers = self.get_success_headers(serializer.data)
 
-        return Response({"message":"Employee created successfully",
-                         "employee":serializer.data},
+        return Response({"message": "Employee created successfully",
+                         "employee": serializer.data},
                         status=status.HTTP_201_CREATED, headers=headers)
 
 
@@ -39,7 +35,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
     # authentication_classes = [JWTAuthentication]
     # permission_classes = [IsAuthenticated]
 
-
     def create(self, request, *args, **kwargs):
         logger.info(f"Creating a new employee with data: {request.data}")
 
@@ -47,8 +42,8 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             response = super().create(request, *args, **kwargs)
             emp_id = response.data.get('user_id')
             logger.info(f"Employee created with ID: {emp_id}")
-            return Response({"message":" Employee created successfully",
-                             "data":response.data},
+            return Response({"message": " Employee created successfully",
+                             "data": response.data},
                             status=status.HTTP_201_CREATED)
         except Exception as e:
             logger.error(f"Error creating employee: {str(e)}")
@@ -63,7 +58,6 @@ class EmployeeViewSet(viewsets.ModelViewSet):
         except NotFound:
             logger.error(f"Employee with ID {emp_id} not found.")
             return Response({"message": "Employee not found."}, status=status.HTTP_404_NOT_FOUND)
-
 
         try:
             response = super().update(request, *args, **kwargs)
@@ -90,3 +84,32 @@ class EmployeeViewSet(viewsets.ModelViewSet):
             logger.error(f"Error deleting employee with ID {emp_id}: {str(e)}")
             return Response({"error": "An error occurred while deleting the employee."},
                             status=status.HTTP_400_BAD_REQUEST)
+
+
+class ProfileUpdateView(generics.RetrieveUpdateAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    # permission_classes = [IsAuthenticated]
+
+    def get_object(self):
+        user1 = Employee.objects.get(user_id=2)
+        return user1
+        # return self.request.user  # Get the current logged-in user
+
+    def update(self, request, *args, **kwargs):
+        response = super().update(request, *args, **kwargs)
+        return Response({"message": "Profile updated successfully", "data": response.data}, status=status.HTTP_200_OK)
+
+
+class ProfileDetailView(generics.RetrieveAPIView):
+    queryset = Employee.objects.all()
+    serializer_class = EmployeeSerializer
+    # permission_classes = [IsAuthenticated]
+
+
+    def get_object(self):
+        user1 = Employee.objects.get(user_id=2)
+        print(user1)
+
+        # return self.request.user  # Return the logged-in user's profile
+        return user1

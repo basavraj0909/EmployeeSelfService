@@ -8,7 +8,10 @@ class EmployeeSerializer(serializers.ModelSerializer):
     class Meta:
         model = Employee
         fields = '__all__'
-        fields = ['user_id','username', 'email', 'phone_number', 'password']
+        fields = [
+            'user_id', 'username', 'email', 'phone_number', 'password',
+            'date_of_birth', 'position', 'profile_picture', 'address', 'bio'
+        ]
 
     def create(self, validate_data):
         password = validate_data.pop('password')
