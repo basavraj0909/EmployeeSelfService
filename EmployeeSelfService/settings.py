@@ -36,16 +36,24 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
 
     'rest_framework',
+    'rest_framework_simplejwt',
     'employee',
 ]
 
 MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
-REST_FRAMEWORK = {
-    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
-    'PAGE_SIZE': 10  # Adjust the page size as needed
-}
+# REST_FRAMEWORK = {
+    # 'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    # 'PAGE_SIZE': 10,  # Adjust the page size as needed
+
+    # 'DEFAULT_AUTHENTICATION_CLASSES': [
+    #     'rest_framework_simplejwt.authentication.JWTAuthentication',
+    # ],
+    # 'DEFAULT_PERMISSION_CLASSES': [
+    #     'rest_framework.permissions.IsAuthenticated',
+    # ],
+# }
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -81,14 +89,25 @@ WSGI_APPLICATION = 'EmployeeSelfService.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/4.2/ref/settings/#databases
 
+# DATABASES = {
+#     'default': {
+#         'ENGINE': config.get('DATABASE', 'ENGINE'),
+#         'NAME': config.get('DATABASE', 'NAME'),
+#         'USER': config.get('DATABASE', 'USER'),
+#         'PASSWORD': config.get('DATABASE', 'PASSWORD'),
+#         'HOST': config.get('DATABASE', 'HOST'),
+#         'PORT': config.get('DATABASE', 'PORT'),
+#     }
+# }
+
 DATABASES = {
     'default': {
-        'ENGINE': config.get('DATABASE', 'ENGINE'),
-        'NAME': config.get('DATABASE', 'NAME'),
-        'USER': config.get('DATABASE', 'USER'),
-        'PASSWORD': config.get('DATABASE', 'PASSWORD'),
-        'HOST': config.get('DATABASE', 'HOST'),
-        'PORT': config.get('DATABASE', 'PORT'),
+        'ENGINE': 'django.db.backends.mysql',
+        'NAME': 'ess_db',
+        'USER': 'root',
+        'PASSWORD': 'root',
+        'HOST': 'db',  # This matches the MySQL service name in docker-compose.yml
+        'PORT': '3306',
     }
 }
 
