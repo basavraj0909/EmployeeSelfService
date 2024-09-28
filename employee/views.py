@@ -1,4 +1,6 @@
 from rest_framework import viewsets
+from rest_framework_simplejwt.tokens import RefreshToken
+
 from .models import Employee
 from .emp_serializers import EmployeeSerializer
 import logging
@@ -19,12 +21,23 @@ class RegisterView(generics.CreateAPIView):
     def create(self, request, *args, **kwargs):
         serializer = self.get_serializer(data=request.data)
         serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+
+        employee = self.perform_create(serializer)
+        refresh = RefreshToken.for_user(employee)
+
         headers = self.get_success_headers(serializer.data)
 
-        return Response({"message": "Employee created successfully",
-                         "employee": serializer.data},
-                        status=status.HTTP_201_CREATED, headers=headers)
+        return Response({
+            "message": "Employee created successfully",
+            "employee": serializer.data,
+
+            "refresh": str(refresh),
+            "access": str(refresh.access_token)},
+            status=status.HTTP_201_CREATED, headers=headers)
+
+    def perform_create(self, serializer):
+        return serializer.save()
+
 
 
 class EmployeeViewSet(viewsets.ModelViewSet):
@@ -89,12 +102,11 @@ class EmployeeViewSet(viewsets.ModelViewSet):
 class ProfileUpdateView(generics.RetrieveUpdateAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
     def get_object(self):
         user1 = Employee.objects.get(user_id=2)
-        return user1
-        # return self.request.user  # Get the current logged-in user
+        return self.request.user  # Get the current logged-in user
 
     def update(self, request, *args, **kwargs):
         response = super().update(request, *args, **kwargs)
@@ -104,12 +116,9 @@ class ProfileUpdateView(generics.RetrieveUpdateAPIView):
 class ProfileDetailView(generics.RetrieveAPIView):
     queryset = Employee.objects.all()
     serializer_class = EmployeeSerializer
-    # permission_classes = [IsAuthenticated]
+    permission_classes = [IsAuthenticated]
 
 
     def get_object(self):
-        user1 = Employee.objects.get(user_id=2)
-        print(user1)
+        return self.request.user  # Return the logged-in user's profile
 
-        # return self.request.user  # Return the logged-in user's profile
-        return user1

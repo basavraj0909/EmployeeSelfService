@@ -48,5 +48,10 @@ class Employee(AbstractBaseUser, PermissionsMixin):
     USERNAME_FIELD = 'username'
     REQUIRED_FIELDS = ['email', 'phone_number']
 
+    # Alias for the primary key
+    @property
+    def id(self):
+        return self.user_id
+
     def __str__(self):
         return f"{self.username} - {self.position}"
